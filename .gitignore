@@ -1,0 +1,4 @@
+# haskell executables and profiling information
+*.hi
+*.o
+*.prof
