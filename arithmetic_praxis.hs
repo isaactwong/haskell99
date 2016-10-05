@@ -44,3 +44,10 @@ pFactors n = pFactors' n 2
           pFactors' n f
                     | (mod n f) == 0 = f : pFactors' (div n f) f
                     | otherwise = pFactors' n (f+1)
+
+-- Problem 37: Calculate Eulers totient function phi(m) (improved).
+eulerPhi :: Int -> Int
+eulerPhi n = foldr (*) 1 $ map (\(p, m) -> (p-1)*p^(m-1)) $ primeFactorsMult n
+
+-- Another succint one from Haskell99
+-- eulerPhi n = product [(p-1)*p^(m-1) | (p,m) <- primeFactorsMult n]
