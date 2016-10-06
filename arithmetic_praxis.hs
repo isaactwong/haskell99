@@ -61,3 +61,10 @@ eulerPhi n = foldr (*) 1 $ map (\(p, m) -> (p-1)*p^(m-1)) $ primeFactorsMult n
 -- Problem 39: A list of prime numbers in a specified integer interval.
 primeRange :: Integer -> Integer -> [Integer]
 primeRange n m = filter isPrime [n..m]
+
+-- Problem 40: Goldbach's conjecture: Every positive integer greater than 2 is the sum of two numbers. For a given integer, find the two primes that sum to that number.
+goldbach :: Integer -> (Integer, Integer)
+goldbach n = head (filter (\(a,b) -> isPrime a && isPrime b) ((zip [2..n] (map ((-) n) [2..n]))))
+
+-- And of course, another cool solution from Haskell99
+-- goldbach n = head [(a,b) | a <- primeRange 2 n, b <- primeRange 2 n, a + b == n]
