@@ -68,3 +68,7 @@ goldbach n = head (filter (\(a,b) -> isPrime a && isPrime b) ((zip [2..n] (map (
 
 -- And of course, another cool solution from Haskell99
 -- goldbach n = head [(a,b) | a <- primeRange 2 n, b <- primeRange 2 n, a + b == n]
+
+-- Problem 41: Given a range, find all the even numbers and their goldbach composition.
+goldbachList :: Integer -> Integer -> [(Integer, Integer)]
+goldbachList a b = map goldbach (filter even [a..b])
