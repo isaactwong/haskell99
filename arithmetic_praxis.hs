@@ -8,6 +8,7 @@ allPrimesToN n = eratosthenes [2..n]
                    eratosthenes (x:xs) = x : (eratosthenes (xs \\ [x, x+x..n]))
 
 isPrime :: Integer -> Bool
+isPrime 1 = False
 isPrime n = (last . allPrimesToN) n == n
 
 -- Problem 32: Determine the greatest common divisor of two positive integers
@@ -51,3 +52,23 @@ eulerPhi n = foldr (*) 1 $ map (\(p, m) -> (p-1)*p^(m-1)) $ primeFactorsMult n
 
 -- Another succint one from Haskell99
 -- eulerPhi n = product [(p-1)*p^(m-1) | (p,m) <- primeFactorsMult n]
+
+-- Problem 38: Compare the 2 methods of calculating Euler's totient function.
+-- 37 is better! Though for 10090 there wasn't much difference in performance to the naked eye. But the memory and allocation was vastly different.
+-- ghc -prof -fprof-auto -rtsopts arithmetic_praxis.hs
+-- ./arithmetic_praxis +RTS -p
+
+-- Problem 39: A list of prime numbers in a specified integer interval.
+primeRange :: Integer -> Integer -> [Integer]
+primeRange n m = filter isPrime [n..m]
+
+-- Problem 40: Goldbach's conjecture: Every positive integer greater than 2 is the sum of two numbers. For a given integer, find the two primes that sum to that number.
+goldbach :: Integer -> (Integer, Integer)
+goldbach n = head (filter (\(a,b) -> isPrime a && isPrime b) ((zip [2..n] (map ((-) n) [2..n]))))
+
+-- And of course, another cool solution from Haskell99
+-- goldbach n = head [(a,b) | a <- primeRange 2 n, b <- primeRange 2 n, a + b == n]
+
+-- Problem 41: Given a range, find all the even numbers and their goldbach composition.
+goldbachList :: Integer -> Integer -> [(Integer, Integer)]
+goldbachList a b = map goldbach (filter even [a..b])
