@@ -47,3 +47,8 @@ logicTable f = do
 
 -- Another cool one from Haskell99
 -- logicTable f =  apM_ putStrLn [(show a) ++ " | " ++ (show b) ++ " | " ++ (show (f a b)) | a <- [True, False], b <- [True, False]]
+
+-- Problem 47: Continue problem P46 by defining and/2, or/2, etc as being operators.
+-- No idea what the Java ones are so stole the values from Haskell99.
+infixl 4 `or'`
+infixl 6 `and'`
