@@ -36,3 +36,14 @@ equ' :: Bool -> Bool -> Bool
 equ' True True = True
 equ' False False = True
 equ' _ _ = False
+
+-- Print out the table for all combinations of True and False
+logicTable :: (Bool -> Bool -> Bool) -> IO ()
+logicTable f = do
+           putStrLn $ "True | True | " ++ show (f True True)
+           putStrLn $ "True | False | " ++ show (f True False)
+           putStrLn $ "False | True | " ++ show (f False True)
+           putStrLn $ "False | False | " ++ show (f False False)
+
+-- Another cool one from Haskell99
+-- logicTable f =  apM_ putStrLn [(show a) ++ " | " ++ (show b) ++ " | " ++ (show (f a b)) | a <- [True, False], b <- [True, False]]
