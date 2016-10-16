@@ -1,3 +1,5 @@
+import Control.Monad (replicateM)
+
 -- Problem 46: Define predicates and/2, or/2, nand/2, nor/2, xor/2, impl/2 and equ/2 (for logical equivalence) which succeed or fail according to the result of their respective operations; e.g. and(A,B) will succeed, if and only if both A and B succeed.
 -- Now, write a predicate table/3 which prints the truth table of a given logical expression in two variables.
 
@@ -52,3 +54,11 @@ logicTable f = do
 -- No idea what the Java ones are so stole the values from Haskell99.
 infixl 4 `or'`
 infixl 6 `and'`
+
+-- Problem 48: Generalize problem 47 in such a way that the logical expression may contain any number of logical variables. Again, the geniuses at Haskell99 provided this solution.
+tablen :: Int -> ([Bool] -> Bool) -> IO ()
+tablen n f = mapM_ putStrLn [toStr a ++ " => " ++ show (f a) | a <- args n]
+    where args n = replicateM n [True, False]
+          toStr = unwords . map (\x -> show x ++ space x)
+          space True = "  "
+          space False = " "
