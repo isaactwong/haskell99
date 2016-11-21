@@ -1,4 +1,6 @@
 import Control.Monad (replicateM)
+import Data.List
+import Data.Ord (comparing)
 
 -- Problem 46: Define predicates and/2, or/2, nand/2, nor/2, xor/2, impl/2 and equ/2 (for logical equivalence) which succeed or fail according to the result of their respective operations; e.g. and(A,B) will succeed, if and only if both A and B succeed.
 -- Now, write a predicate table/3 which prints the truth table of a given logical expression in two variables.
@@ -72,3 +74,17 @@ tablen n f = mapM_ putStrLn [toStr a ++ " => " ++ show (f a) | a <- args n]
 gray :: Int -> [String]
 gray 0 = [""]
 gray n = ["0" ++ x | x <- gray (n-1)] ++ ["1" ++ x | x <- (reverse . gray) (n-1)]
+
+-- Problem 50: Huffman Codes.
+data HuffmanTree a = Leaf a | Branch (HuffmanTree a) (HuffmanTree a) deriving Show
+huffman :: (Ord a, Ord w, Num w) => [(a, w)] -> [(a, [Char])]
+huffman freq = sortBy (comparing fst) $ serialize $ createHuffmanTree (sortFrequencies freq)
+        where
+                createHuffmanTree [(_, t)] = t
+                createHuffmanTree ((w1, t1) : (w2, t2) : wts) =
+                                  createHuffmanTree $ insertBy (comparing fst) (w1 + w2, Branch t1 + t2) wts
+                serialize (Branch l r) =
+                          [(x, '0' : code) | (x, code) <- serialize l] ++ [ (x, '1' : code) | (x, code) <- serialize r]
+                serialize (Leaf x) = [(x, "")]
+                sortFrequencies xs = sortBy (comparing fst) [(w, Leaf x) | (x, w) <- xs]
+
