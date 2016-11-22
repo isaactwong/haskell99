@@ -76,15 +76,17 @@ gray 0 = [""]
 gray n = ["0" ++ x | x <- gray (n-1)] ++ ["1" ++ x | x <- (reverse . gray) (n-1)]
 
 -- Problem 50: Huffman Codes.
+-- [("a",45),("b",13),("c",12),("d",16),("e",9),("f",5)]
 data HuffmanTree a = Leaf a | Branch (HuffmanTree a) (HuffmanTree a) deriving Show
-huffman :: (Ord a, Ord w, Num w) => [(a, w)] -> [(a, [Char])]
-huffman freq = sortBy (comparing fst) $ serialize $ createHuffmanTree (sortFrequencies freq)
-        where
-                createHuffmanTree [(_, t)] = t
-                createHuffmanTree ((w1, t1) : (w2, t2) : wts) =
-                                  createHuffmanTree $ insertBy (comparing fst) (w1 + w2, Branch t1 + t2) wts
-                serialize (Branch l r) =
-                          [(x, '0' : code) | (x, code) <- serialize l] ++ [ (x, '1' : code) | (x, code) <- serialize r]
-                serialize (Leaf x) = [(x, "")]
-                sortFrequencies xs = sortBy (comparing fst) [(w, Leaf x) | (x, w) <- xs]
-
+huffmanEncoding :: (Ord c, Ord f, Num f) => [(c, f)] -> [(c, [Char])]
+huffmanEncoding source = sortBy (comparing fst) $ serialize $ buildHTree $ addLeafs $ sortByFreqs source
+                where
+                        sortByFreqs xs = sortBy (comparing snd) xs
+                        addLeafs xs = map (\(c, f) -> (Leaf c, f)) xs
+                        buildHTree [(htree, _)] = htree
+                        buildHTree ((htree1, freq1) : (htree2, freq2) : hfs) =
+                                   buildHTree $ insertBy (comparing snd) (Branch htree1 htree2, freq1 + freq2) hfs
+                        serialize (Branch l r) = 
+                                 [(x, '0' : code) | (x, code) <- serialize l] ++
+                                 [(x, '1' : code) | (x, code) <- serialize r]
+                        serialize (Leaf x) = [(x, "")]
