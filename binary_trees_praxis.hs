@@ -3,7 +3,8 @@
 
 -- Problem 55: Construct completely balanced binary trees.
 -- Binary trees are defined to be balanced if |#-nodes-left-subtree - #-nodes-right-subtree| <= 1
-data BinaryTree a = Empty | Branch a (BinaryTree a) (BinaryTree a) deriving Show
+-- More help from the website. This one is magic.
+data BinaryTree a = Empty |  Branch a (BinaryTree a) (BinaryTree a) deriving Show
 
 balancedBinaryTrees :: Int -> [BinaryTree Char]
 balancedBinaryTrees 0 = [Empty]
