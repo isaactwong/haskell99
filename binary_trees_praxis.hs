@@ -12,4 +12,3 @@ balancedBinaryTrees n = let (q, r) = quotRem (n-1) 2
                     in [Branch 'x' left right | i <- [q..(q+r)],
                        left <- balancedBinaryTrees i,
                        right <- balancedBinaryTrees (n-i-1)]
-                       
