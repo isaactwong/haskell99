@@ -28,4 +28,15 @@ isSymmetric :: BinaryTree Char -> Bool
 isSymmetric Empty = True
 isSymmetric (Branch _ left right) = isMirror left right
 
+-- Problem 57: Binary Search Trees
+-- Use the predicate add/3, developed in chapter 4 of the course, to write a predicate to construct a binary search tree from a list of integer numbers.
+construct :: (Ord a) => [a] -> BinaryTree a
+construct xs = foldl addToTree Empty xs
+          where addToTree Empty x = Branch x Empty Empty
+                addToTree (Branch y left right) x = Branch y (addToTree left x) right
+
+
+
+
+
          
