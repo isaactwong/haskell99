@@ -38,7 +38,11 @@ construct xs = foldl addToTree Empty xs
                              then Branch y (addToTree left x) right
                              else Branch y left (addToTree right x)
 
+-- Problem 58: Generate and Test Paradigm
+-- Apply the generate-and-test paradigm to construct all symmetric, completely balanced binary trees with a given number of nodes.
 
+symBalancedBTrees :: Int -> [BinaryTree Char]
+symBalancedBTrees = filter isSymmetric . balancedBinaryTrees
 
 
 
