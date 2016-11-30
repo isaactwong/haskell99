@@ -33,7 +33,10 @@ isSymmetric (Branch _ left right) = isMirror left right
 construct :: (Ord a) => [a] -> BinaryTree a
 construct xs = foldl addToTree Empty xs
           where addToTree Empty x = Branch x Empty Empty
-                addToTree (Branch y left right) x = Branch y (addToTree left x) right
+                addToTree (Branch y left right) x =
+                          if (x <= y)
+                             then Branch y (addToTree left x) right
+                             else Branch y left (addToTree right x)
 
 
 
