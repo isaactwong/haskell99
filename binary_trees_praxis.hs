@@ -47,9 +47,9 @@ symBalancedBTrees = filter isSymmetric . balancedBinaryTrees
 -- Construct height-balanced binary trees
 -- In a height-balanced binary tree, the following property holds for every node: The height of its left subtree and the height of its right subtree are almost equal, which means their difference is not greater than one.
 -- Construct a list of all height-balanced binary trees with the given element and the given maximum height.
-heightBalancedTrees :: Int -> [BinaryTree Char]
-
-
-
-
-         
+heightBalTree :: Int -> [BinaryTree Char]
+heightBalTree 0 = [Empty]
+heightBalTree 1 = [Branch 'x' Empty Empty]
+heightBalTree n =
+              [Branch 'x' left right | (l,r) <- [(n-2, n-1), (n-1, n-1), (n-1, n-2)],
+              left <- heightBalTree l, right <- heightBalTree r]
