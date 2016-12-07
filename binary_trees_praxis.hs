@@ -53,3 +53,13 @@ heightBalTree 1 = [Branch 'x' Empty Empty]
 heightBalTree n =
               [Branch 'x' left right | (l,r) <- [(n-2, n-1), (n-1, n-1), (n-1, n-2)],
               left <- heightBalTree l, right <- heightBalTree r]
+
+-- Problem 60: Construct height-balanced binary trees with a given number of nodes
+-- Naive approach is way too slow!
+heightBalancedTree :: Int -> [BinaryTree Char]
+heightBalancedTree n = filter (\tree -> (countNodes tree) == n) (heightBalancedTree n)
+
+countNodes :: BinaryTree a -> Int
+countNodes Empty = 0
+countNodes (Branch x left right) = 1 + (countNodes left) + (countNodes right)
+
