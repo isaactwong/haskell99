@@ -4,6 +4,22 @@
 -- Definition of a binary tree.
 data BinaryTree a = Empty |  Branch a (BinaryTree a) (BinaryTree a) deriving (Show, Eq)
 
+-- Random tree of Chars
+tree1 = Branch 'a' (Branch 'b' (Branch 'd' Empty Empty)
+                               (Branch 'e' Empty Empty))
+                   (Branch 'c' Empty
+                               (Branch 'f' (Branch 'g' Empty Empty)
+                                           Empty))
+-- A binary tree consisting of a root node only
+tree2 = Branch 'a' Empty Empty
+ 
+-- An empty binary tree
+tree3 = Empty
+
+-- A tree of integers
+tree4 = Branch 1 (Branch 2 Empty (Branch 4 Empty Empty))
+                 (Branch 2 Empty Empty)
+
 -- Problem 55: Construct completely balanced binary trees.
 -- Binary trees are defined to be balanced if |#-nodes-left-subtree - #-nodes-right-subtree| <= 1
 -- More help from the website. This one is magic.
@@ -59,7 +75,21 @@ heightBalTree n =
 heightBalancedTree :: Int -> [BinaryTree Char]
 heightBalancedTree n = filter (\tree -> (countNodes tree) == n) (heightBalancedTree n)
 
+-- Problem 61: Count the leaves of a binary tree.
 countNodes :: BinaryTree a -> Int
 countNodes Empty = 0
 countNodes (Branch x left right) = 1 + (countNodes left) + (countNodes right)
 
+-- Problem 61A: Collect the leaves of a binary tree in a list.
+-- A leaf is a node with no successor
+leaves :: BinaryTree a -> [a]
+leaves Empty = []
+leaves (Branch x Empty Empty) = [x]
+leaves (Branch x left right) = (leaves left) ++ (leaves right)
+
+-- Problem 62: Collect the internal nodes of a binary tree in a list
+-- An internal node of a binary tree has either one or two non-empty successors. Write a predicate internals/2 to collect them in a list.
+internals :: BinaryTree a -> [a]
+internals Empty = []
+internals (Branch x Empty Empty) = []
+internals (Branch x left right) = [x] ++ (leaves left) ++ (leaves right)
