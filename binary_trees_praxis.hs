@@ -20,6 +20,32 @@ tree3 = Empty
 tree4 = Branch 1 (Branch 2 Empty (Branch 4 Empty Empty))
                  (Branch 2 Empty Empty)
 
+tree64 = Branch 'n'
+                (Branch 'k'
+                        (Branch 'c'
+                                (Branch 'a' Empty Empty)
+                                (Branch 'h'
+                                        (Branch 'g'
+                                                (Branch 'e' Empty Empty)
+                                                Empty
+                                        )
+                                        Empty
+                                )
+                        )
+                        (Branch 'm' Empty Empty)
+                )
+                (Branch 'u'
+                        (Branch 'p'
+                                Empty
+                                (Branch 's'
+                                        (Branch 'q' Empty Empty)
+                                        Empty
+                                )
+                        )
+                        Empty
+                )
+
+
 -- Problem 55: Construct completely balanced binary trees.
 -- Binary trees are defined to be balanced if |#-nodes-left-subtree - #-nodes-right-subtree| <= 1
 -- More help from the website. This one is magic.
@@ -93,3 +119,43 @@ internals :: BinaryTree a -> [a]
 internals Empty = []
 internals (Branch x Empty Empty) = []
 internals (Branch x left right) = [x] ++ (leaves left) ++ (leaves right)
+
+-- Problem 62b
+-- Collect the nodes at a given level in a list
+-- A node of a binary tree is at level N if the path from the root to the node has length N-1. The root node is at level 1. Write a predicate atlevel/3 to collect all nodes at a given level in a list.
+-- Instead of counting from 1->n and keeping two variables to track target and where you are, we start counting at n and then decrease until we are at 1. This means we only need one Int. Solution from Haskell99 page and much better then the ascending count I did first.
+atLevel :: BinaryTree a -> Int -> [a]
+atLevel Empty _ = []
+atLevel (Branch x left right) target
+        | target == 1 = [x]
+        | target > 1  = (atLevel left (target-1)) ++ (atLevel right (target-1))
+        | otherwise   = []
+
+-- Problem 63
+-- Construct a complete binary tree
+-- A complete binary tree with height H is defined as follows:
+-- The levels 1,2,3,...,H-1 contain the maximum number of nodes (i.e 2**(i-1) at the level i)
+-- In level H, which may contain less than the maximum possible number of nodes, all the nodes are "left-adjusted". This means that in a levelorder tree traversal all internal nodes come first, the leaves come second, and empty successors (the nil's which are not really nodes!) come last.
+-- Particularly, complete binary trees are used as data structures (or addressing schemes) for heaps.
+-- We can assign an address number to each node in a complete binary tree by enumerating the nodes in level-order, starting at the root with number 1. For every node X with address A the following property holds: The address of X's left and right successors are 2*A and 2*A+1, respectively, if they exist. This fact can be used to elegantly construct a complete binary tree structure.
+-- Write a predicate complete_binary_tree/2.
+-- Not sure I quite understand the question here. Don't they want a full tree to the specified level? Not sure why we aren't filling in the right branches.
+completeBinaryTree :: Int -> BinaryTree Char
+completeBinaryTree n = buildCBTree 1
+  where buildCBTree h
+          | h > n     = Empty
+          | otherwise = Branch 'x' (buildCBTree (2*h+1)) (buildCBTree (2*h+1))  
+
+-- Problem 64
+-- In this layout strategy, the position of a node v is obtained by the following two rules:
+-- x(v) is equal to the position of the node v in the inorder sequence
+-- y(v) is equal to the depth of the node v in the tree
+-- Write a function to annotate each node of the tree with a position, where (1,1) in the top left corner or the rectangle bounding the drawn tree.
+-- Again, with tons of help from Haskell99.
+type Pos = (Int, Int)
+layout :: BinaryTree a -> BinaryTree (a, Pos)
+layout tree = fst (parse_tree tree 1 1)
+       where parse_tree Empty x y = (Empty, x)
+             parse_tree (Branch a left right) x y = (Branch (a, (x', y)) left' right', x'')
+                        where (left', x')   = parse_tree left x (y+1)
+                              (right', x'') = parse_tree right (x'+1) (y+1)
