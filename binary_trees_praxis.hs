@@ -159,3 +159,30 @@ layout tree = fst (parse_tree tree 1 1)
              parse_tree (Branch a left right) x y = (Branch (a, (x', y)) left' right', x'')
                         where (left', x')   = parse_tree left x (y+1)
                               (right', x'') = parse_tree right (x'+1) (y+1)
+
+-- Problem 65
+-- An alternative layout method is depicted in the illustration below:
+-- See https://wiki.haskell.org/99_questions/Solutions/65
+-- Find out the rules and write the corresponding function. Hint: On a given level, the horizontal distance between neighboring nodes is constant.
+-- Use the same conventions as in problem P64 and test your function in an appropriate w
+-- Again, saved by the smart people at Haskell99.
+layout2 :: BinaryTree a -> BinaryTree (a, Pos)
+layout2 tree = layout_aux x1 1 sep1 tree
+        where d = depth tree
+              ld = left_depth tree
+              x1 = 2^(d-1) - 2^(d-ld) + 1
+              sep1 = 2^(d-2)
+              layout_aux x y sep Empty = Empty
+              layout_aux x y sep (Branch a left right) =
+                         Branch (a, (x,y))
+                                (layout_aux (x-sep) (y+1) (div sep 2) left)
+                                (layout_aux (x+sep) (y+1) (div sep 2) right)
+
+-- Depth of a tree. The depth of a branch point is the max of the left or right branch + 1.
+depth :: BinaryTree a -> Int
+depth Empty = 0
+depth (Branch a left right) = (max (depth left) (depth right)) + 1
+
+left_depth :: BinaryTree a -> Int
+left_depth Empty = 0
+left_depth (Branch a left right) = (left_depth left) + 1
