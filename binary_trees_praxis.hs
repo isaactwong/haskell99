@@ -195,7 +195,7 @@ left_depth (Branch a left right) = (left_depth left) + 1
 layout3 :: BinaryTree a -> BinaryTree (a, Pos)
 layout3 tree = tree'
         where (left, tree', right) = layout_aux x1 1 tree
-              x1 = (maximum left)+1
+              x1 = (maximum left)+1 -- how is this possible?
 
 layout_aux :: Int -> Int -> BinaryTree a -> ([Int], BinaryTree (a, Pos), [Int])
 layout_aux x y Empty = ([], Empty, [])
