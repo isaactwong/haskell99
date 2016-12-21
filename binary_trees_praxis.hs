@@ -186,3 +186,27 @@ depth (Branch a left right) = (max (depth left) (depth right)) + 1
 left_depth :: BinaryTree a -> Int
 left_depth Empty = 0
 left_depth (Branch a left right) = (left_depth left) + 1
+
+-- Problem 66
+-- The method yields a very compact layout while maintaining a certain symmetry in every node. Find out the rules and write the corresponding Prolog predicate. Hint: Consider the horizontal distance between a node and its successor nodes. How tight can you pack together two subtrees to construct the combined binary tree?
+-- See https://wiki.haskell.org/99_questions/Solutions/66
+-- Use the same conventions as in problem P64 and P65 and test your predicate in an appropriate way. Note: This is a difficult problem. Don't give up too early!
+--I gave up! Again, help from Haskell99 saved me here!
+layout3 :: BinaryTree a -> BinaryTree (a, Pos)
+layout3 tree = tree'
+        where (left, tree', right) = layout_aux x1 1 tree
+              x1 = (maximum left)+1
+
+layout_aux :: Int -> Int -> BinaryTree a -> ([Int], BinaryTree (a, Pos), [Int])
+layout_aux x y Empty = ([], Empty, [])
+layout_aux x y (Branch a left right) = (ll', Branch (a, (x,y)) l' r', rr')
+           where (ll, l', lr) = layout_aux (x-sep) (y+1) left
+                 (rl, r', rr) = layout_aux (x+sep) (y+1) right
+                 sep = (div (maximum (0:zipWith (+) lr rl)) 2) + 1
+                 ll' = 0 : overlay (map (+sep) ll) (map (subtract sep) rl)
+                 rr' = 0 : overlay (map (+sep) rr) (map (subtract sep) lr)
+
+overlay :: [a] -> [a] -> [a]
+overlay [] ys = ys
+overlay xs [] = xs
+overlay (x:xs) (y:ys) = x : overlay xs ys
