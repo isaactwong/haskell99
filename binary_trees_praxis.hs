@@ -210,3 +210,19 @@ overlay :: [a] -> [a] -> [a]
 overlay [] ys = ys
 overlay xs [] = xs
 overlay (x:xs) (y:ys) = x : overlay xs ys
+
+{-
+Problem 67
+A string representation of binary trees
+
+Somebody represents binary trees as strings of the following type:
+
+a(b(d,e),c(,f(g,)))
+
+a) Write a Prolog predicate which generates this string representation, if the tree is given as usual (as nil or t(X,L,R) term). Then write a predicate which does this inverse; i.e. given the string representation, construct the tree in the usual form. Finally, combine the two predicates in a single predicate tree_string/2 which can be used in both directions.
+-}
+tree_to_string :: (Show a) => BinaryTree a -> String
+tree_to_string Empty = ""
+tree_to_string (Branch a left right) = (show a) ++ "(" ++ tree_to_string left ++ "," ++ tree_to_string right ++ ")"
+
+--string_to_tree :: BinaryTree a -> String
