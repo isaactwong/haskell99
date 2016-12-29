@@ -225,4 +225,15 @@ tree_to_string :: (Show a) => BinaryTree a -> String
 tree_to_string Empty = ""
 tree_to_string (Branch a left right) = (show a) ++ "(" ++ tree_to_string left ++ "," ++ tree_to_string right ++ ")"
 
---string_to_tree :: BinaryTree a -> String
+-- Again, from Haskell99 site. They are smart.
+string_to_tree :: (Monad m) => String -> m (BinaryTree Char)
+string_to_tree "" = return Empty
+string_to_tree [x] = return (Branch x Empty Empty)
+string_to_tree str = tfs str >>= \("",t) -> return t
+               where tfs a@(x:xs) | x == ',' || x == ')' = return (a,Empty)
+                     tfs (x:y:xs)
+                         | y == ',' || y == ')' = return (y:xs, Branch x Empty Empty)
+                         | y == '(' = do (',':xs', l) <- tfs xs
+                                         (')':xs'', r) <- tfs xs'
+                                         return $ (xs'', Branch x l r)
+                     tfs _ = fail "bad parse"
