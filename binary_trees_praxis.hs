@@ -45,6 +45,12 @@ tree64 = Branch 'n'
                         Empty
                 )
 
+tree5 = (Branch "a"
+                (Branch "b" (Branch "d" Empty Empty) (Branch "e" Empty Empty))
+                (Branch "c" Empty (Branch "f" (Branch "g" Empty Empty) Empty)))
+
+
+
 
 -- Problem 55: Construct completely balanced binary trees.
 -- Binary trees are defined to be balanced if |#-nodes-left-subtree - #-nodes-right-subtree| <= 1
@@ -237,3 +243,44 @@ string_to_tree str = tfs str >>= \("",t) -> return t
                                          (')':xs'', r) <- tfs xs'
                                          return $ (xs'', Branch x l r)
                      tfs _ = fail "bad parse"
+
+
+{-
+Problem 68
+
+Preorder and inorder sequences of binary trees. We consider binary trees with nodes that are identified by single lower-case letters, as in the example of problem P67.
+
+a) Write predicates preorder/2 and inorder/2 that construct the preorder and inorder sequence of a given binary tree, respectively. The results should be atoms, e.g. 'abdecfg' for the preorder sequence of the example in problem P67.
+
+b) Can you use preorder/2 from problem part a) in the reverse direction; i.e. given a preorder sequence, construct a corresponding tree? If not, make the necessary arrangements.
+
+c) If both the preorder sequence and the inorder sequence of the nodes of a binary tree are given, then the tree is determined unambiguously. Write a predicate pre_in_tree/3 that does the job.
+
+-}
+
+-- Part a
+preorder :: (Show a) => BinaryTree a -> [a]
+preorder Empty = []
+preorder (Branch x left right) = [x] ++ (preorder left) ++ (preorder right)
+
+inorder :: (Show a) => BinaryTree a -> [a]
+inorder Empty = []
+inorder (Branch x left right) = (inorder left) ++ [x] ++ (inorder right)
+
+-- Part b
+preorder_to_tree :: String -> BinaryTree Char
+preorder_to_tree "" = Empty
+preorder_to_tree (x:xs) = Branch x (preorder_to_tree xs) Empty
+
+-- Part c
+-- Solution from Haskell99. Yes, they are smart.
+unique_tree :: (Monad m) => String -> String -> m (BinaryTree Char)
+unique_tree [] [] = return Empty
+unique_tree po@(x:xs) io = do (lio, _:rio) <- return $ break (==x) io
+                              (lpo, rpo)   <- return $ splitAt (length lio) xs
+                              l <- unique_tree lpo lio
+                              r <- unique_tree rpo rio
+                              return $ Branch x l r
+unique_tree _ _ = fail "Bad orders"
+
+
