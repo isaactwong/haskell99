@@ -284,3 +284,22 @@ unique_tree po@(x:xs) io = do (lio, _:rio) <- return $ break (==x) io
 unique_tree _ _ = fail "Bad orders"
 
 
+{-
+Problem 69
+
+We consider again binary trees with nodes that are identified by single lower-case letters, as in the example of problem P67. Such a tree can be represented by the preorder sequence of its nodes in which dots (.) are inserted where an empty subtree (nil) is encountered during the tree traversal. For example, the tree shown in problem P67 is represented as 'abd..e..c.fg...'. First, try to establish a syntax (BNF or syntax diagrams) and then write a predicate tree_dotstring/2 which does the conversion in both directions. Use difference lists.
+
+-}
+
+tree_to_dot :: (Show a) => (BinaryTree a) -> String
+tree_to_dot Empty = "."
+tree_to_dot (Branch x left right) = (show x) ++ (tree_to_dot left) ++ (tree_to_dot right)
+
+-- Used some hints from Haskell99 here.
+dot_to_tree :: String -> BinaryTree Char
+dot_to_tree s = fst (dts s)
+            where dts []         = (Empty, "")
+                  dts ('.' : xs) = (Empty, xs)
+                  dts (x:xs)     = (Branch x left right, remainder2)
+                      where (left, remainder) = dts xs
+                            (right, remainder2) = dts remainder
