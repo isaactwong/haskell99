@@ -40,6 +40,7 @@ By this rule, the tree below (tree5) is represented as: afg^^c^bd^e^^^
 Define the syntax of the string and write a predicate tree(String,Tree) to construct the Tree when the String is given. Make your predicate work in both directions.
 -}
 
+-- Haskell99 solutions.
 treeToString :: (Tree Char) -> String
 treeToString (Node x []) = [x]
 treeToString (Node x ts) = [x] ++ (concat $ intersperse "^" (map treeToString ts)) ++ "^"
@@ -53,3 +54,12 @@ stringToTree (x:xs) = (Node x (fst (convert xs)))
                         | otherwise = ([(Node x) trees0] ++ trees1, rest1)
                                     where (trees0, rest0) = convert xs
                                           (trees1, rest1) = convert rest0
+
+{-
+Problem 71
+
+Determine the internal path length of a tree.
+
+We define the internal path length of a multiway tree as the total sum of the path lengths from the root to all nodes of the tree. By this definition, tree5 has an internal path length of 9.
+-}
+
