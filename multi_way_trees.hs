@@ -63,3 +63,7 @@ Determine the internal path length of a tree.
 We define the internal path length of a multiway tree as the total sum of the path lengths from the root to all nodes of the tree. By this definition, tree5 has an internal path length of 9.
 -}
 
+internal_path_length :: (Tree a) -> Int
+internal_path_length tree = ipl 0 tree
+                     where
+                        ipl n (Node y ts) = n + sum (map (ipl (n+1)) ts)
