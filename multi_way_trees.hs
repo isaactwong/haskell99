@@ -67,3 +67,14 @@ internal_path_length :: (Tree a) -> Int
 internal_path_length tree = ipl 0 tree
                      where
                         ipl n (Node y ts) = n + sum (map (ipl (n+1)) ts)
+
+{-
+Problem 72
+Construct the bottom-up order sequence of the tree nodes.
+
+Write a predicate bottom_up(Tree,Seq) which constructs the bottom-up sequence of the nodes of the multiway tree Tree.
+-}
+
+bottom_up :: (Show a) => (Tree a) -> [a]
+bottom_up (Node x []) = [x]
+bottom_up (Node x ts) = concat (map bottom_up ts) ++ [x]
