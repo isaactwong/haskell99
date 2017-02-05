@@ -9,6 +9,7 @@ data Adjacency a = Adjacency [(a,[a])] deriving (Show, Eq)
 data Friendly a  = Friendly [(a,a)]    deriving (Show, Eq)
 
 graph1 = Graph ['g','h','b','c','f','k','d'] [('g','h'),('b','c'),('b','f'),('f','c'),('k','f')]
+adj1   = Adjacency [('b', ['c','f']),('c',['b','f']),('f',['b','c']),('k', ['f'])]
 
 -- Graph to Adjacency
 graph_to_adj :: (Eq a) => Graph a -> Adjacency a
@@ -24,3 +25,23 @@ graphToAdj (Graph (v:vs) es) = Adjacency ((v, es >>= (f v)) : zs)
                    | v1 == e1  = [e2]
                    | otherwise = []
                  Adjacency zs = graphToAdj (Graph vs es)
+
+-- Adjacency to Graph
+adj_to_graph :: (Eq a) => Adjacency a -> Graph a
+adj_to_graph (Adjacency []) = Graph [] []
+adj_to_graph (Adjacency xs) = Graph (nodes xs) (dups . edges $ xs)
+             where nodes [] = []
+                   nodes ((v,_)  : adjs)  = v : (nodes adjs)
+                   edges [] = []
+                   edges ((v,es) : adjs)  = (map ((,) v) es) ++ edges adjs
+                   dups [] = []
+                   dups ((a,b) : as) = (a,b) : (dups (filter (\(x,y) -> (x,y) /= (a,b) && (x,y) /= (b,a)) as))
+
+-- Cool one from Haskell99
+adjToGraph :: (Eq a) => Adjacency a -> Graph a
+adjToGraph (Adjacency [])        = Graph [] []
+adjToGraph(Adjacency ((v,a):vs)) = Graph (v:xs) ((a>>=(f v)) ++ ys)
+                     where f y x = if elem (y,x) ys || elem (x,y) ys
+                                   then []
+                                   else [(y,x)]
+                           Graph xs ys = adjToGraph (Adjacency vs)
