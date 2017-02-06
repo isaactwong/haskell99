@@ -1,3 +1,5 @@
+import Data.List
+
 {-
 Problem 80: Conversions
 
@@ -8,8 +10,9 @@ data Graph a     = Graph [a] [(a,a)]   deriving (Show, Eq)
 data Adjacency a = Adjacency [(a,[a])] deriving (Show, Eq)
 data Friendly a  = Friendly [(a,a)]    deriving (Show, Eq)
 
-graph1 = Graph ['g','h','b','c','f','k','d'] [('g','h'),('b','c'),('b','f'),('f','c'),('k','f')]
-adj1   = Adjacency [('b', ['c','f']),('c',['b','f']),('f',['b','c']),('k', ['f'])]
+graph1    = Graph ['g','h','b','c','f','k','d'] [('g','h'),('b','c'),('b','f'),('f','c'),('k','f')]
+adj1      = Adjacency [('b', ['c','f']),('c',['b','f']),('f',['b','c']),('k', ['f'])]
+friendly1 = Friendly [('b','c'),('f','c'),('g','h'),('d','d'),('f','b'),('k','f'),('h','g')]
 
 -- Graph to Adjacency
 graph_to_adj :: (Eq a) => Graph a -> Adjacency a
@@ -51,3 +54,11 @@ adjToGraph(Adjacency ((v,a):vs)) = Graph (v:xs) ((a>>=(f v)) ++ ys)
 graph_to_friendly :: (Eq a) => Graph a -> Friendly a
 graph_to_friendly (Graph vs es) = Friendly (es ++ zip g g)
                   where g = filter (\x -> (all (\(a,b) -> x/=a && x/=b) es)) vs
+
+-- Friendly to Graph
+-- Thanks to Haskell99 for the cool uncurry function.
+friendly_to_graph :: (Eq a) => Friendly a -> Graph a
+friendly_to_graph (Friendly fs) = Graph (nub vs) es
+                  where vs = foldr (\(x,y) acc -> [x,y] ++ acc) [] fs
+                        es = filter (uncurry (/=)) fs
+                        
