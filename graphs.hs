@@ -45,3 +45,9 @@ adjToGraph(Adjacency ((v,a):vs)) = Graph (v:xs) ((a>>=(f v)) ++ ys)
                                    then []
                                    else [(y,x)]
                            Graph xs ys = adjToGraph (Adjacency vs)
+
+-- Graph to Friendly
+-- Thanks to Haskell99 for the all function.
+graph_to_friendly :: (Eq a) => Graph a -> Friendly a
+graph_to_friendly (Graph vs es) = Friendly (es ++ zip g g)
+                  where g = filter (\x -> (all (\(a,b) -> x/=a && x/=b) es)) vs
