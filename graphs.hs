@@ -62,3 +62,11 @@ friendly_to_graph (Friendly fs) = Graph (nub vs) es
                   where vs = foldr (\(x,y) acc -> [x,y] ++ acc) [] fs
                         es = filter (uncurry (/=)) fs
                         
+-- Adjacency to Friendly
+adj_to_friendly :: (Eq a) => Adjacency a -> Friendly a
+adj_to_friendly = graph_to_friendly . adj_to_graph
+
+-- Friendly to Adjacency
+friendly_to_adj :: (Eq a) => Friendly a -> Adjacency a
+friendly_to_adj = graph_to_adj . friendly_to_graph 
+
