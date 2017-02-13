@@ -70,3 +70,26 @@ adj_to_friendly = graph_to_friendly . adj_to_graph
 friendly_to_adj :: (Eq a) => Friendly a -> Adjacency a
 friendly_to_adj = graph_to_adj . friendly_to_graph 
 
+{-
+Problem 81
+Path from one node to another one.
+Write a function that, given two nodes a and b in a graph, returns all the acyclic paths from a to b.
+Solution is inspired from Haskell99.
+-}
+
+paths :: (Eq a, Show a) => a -> a -> Friendly a -> [[a]]
+paths x y (Friendly es)
+      | x == y    = [[x]]
+      | otherwise = first_step x y es []
+
+first_step :: (Eq a, Show a) => a -> a -> [(a,a)] -> [a] -> [[a]]
+first_step x y edges path = next_step x y edges path ([y1 | (x1,y1) <- edges, x1==x] ++ [x1 | (x1,y1) <- edges, y1==x])
+
+next_step :: (Eq a, Show a) => a -> a -> [(a,a)] -> [a] -> [a] -> [[a]]
+next_step x y edges path []
+          | x == y    = [path++[y]]
+          | otherwise = []
+next_step x y edges path (z:zs)
+          | x == y      = [path++[y]]
+          | elem x path = []
+          | otherwise   = (first_step z y edges (path++[x])) ++ (next_step x y edges path zs)
