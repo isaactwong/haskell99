@@ -93,3 +93,37 @@ next_step x y edges path (z:zs)
           | x == y      = [path++[y]]
           | elem x path = []
           | otherwise   = (first_step z y edges (path++[x])) ++ (next_step x y edges path zs)
+
+{-
+Problem 82
+
+Cycle from a given node
+
+Write a predicate cycle(G,A,P) to find a closed path (cycle) P starting at a given node A in the graph G. The predicate should return all cycles via backtracking.
+-}
+-- From the smart people at Haskell99
+cycle' :: (Eq a, Show a) => a -> Graph a -> [[a]]
+cycle' a (Graph ns xs) = cycle'' a xs
+      where cycle'' a xs = [(a:p) | e <- xs, (fst e == a), p <- paths'' (snd e) a [x | x <- xs, x /= e]]
+                           ++
+                           [(a:p) | e <- xs, (snd e) == a, p <- paths'' (fst e) a [x | x <- xs, x/= e]]
+
+{-
+Problem 83
+
+Construct all spanning trees
+
+Write a predicate s_tree(Graph,Tree) to construct (by backtracking) all spanning trees of a given graph. With this predicate, find out how many spanning trees there are for the graph depicted to the left. The data of this example graph can be found in the file p83.dat. When you have a correct solution for the s_tree/2 predicate, use it to define two other useful predicates: is_tree(Graph) and is_connected(Graph). Both are five-minutes tasks!
+-}
+
+-- From Haskell99, and I think clearer and cooler than the earlier paths solutions.
+paths' :: (Eq a, Show a) => a -> a -> Graph a -> [[a]]
+paths' a b (Graph ns xs) = paths'' a b xs
+
+paths'' :: (Eq a, Show a) => a -> a -> [(a,a)] -> [[a]]
+paths'' a b xs
+        | a == b    = [[a]]
+        | otherwise = concat [map (a:) (paths'' d b [x | x <- xs, x /= (c,d)]) | (c,d) <- xs, c==a]
+                      ++
+                      concat [map (a:) (paths'' c b [x | x <- xs, x /= (c,d)]) | (c,d) <- xs, d==a]
+
