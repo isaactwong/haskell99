@@ -11,6 +11,7 @@ data Adjacency a = Adjacency [(a,[a])] deriving (Show, Eq)
 data Friendly a  = Friendly [(a,a)]    deriving (Show, Eq)
 
 graph1    = Graph ['g','h','b','c','f','k','d'] [('g','h'),('b','c'),('b','f'),('f','c'),('k','f')]
+graph2    = Graph ['a', 'b', 'c', 'd'] [('a', 'b'), ('b', 'c'), ('c', 'd'), ('d', 'a'), ('a', 'c'), ('b', 'd')]
 adj1      = Adjacency [('b', ['c','f']),('c',['b','f']),('f',['b','c']),('k', ['f'])]
 friendly1 = Friendly [('b','c'),('f','c'),('g','h'),('d','d'),('f','b'),('k','f'),('h','g')]
 
@@ -104,9 +105,11 @@ Write a predicate cycle(G,A,P) to find a closed path (cycle) P starting at a giv
 -- From the smart people at Haskell99
 cycle' :: (Eq a, Show a) => a -> Graph a -> [[a]]
 cycle' a (Graph ns xs) = cycle'' a xs
-      where cycle'' a xs = [(a:p) | e <- xs, (fst e == a), p <- paths'' (snd e) a [x | x <- xs, x /= e]]
-                           ++
-                           [(a:p) | e <- xs, (snd e) == a, p <- paths'' (fst e) a [x | x <- xs, x/= e]]
+
+cycle'' :: (Eq a, Show a) => a -> [(a,a)] -> [[a]]
+cycle'' a xs = [(a:p) | e <- xs, (fst e == a), p <- paths'' (snd e) a [x | x <- xs, x /= e]]
+               ++
+               [(a:p) | e <- xs, (snd e) == a, p <- paths'' (fst e) a [x | x <- xs, x/= e]]
 
 {-
 Problem 83
@@ -127,3 +130,13 @@ paths'' a b xs
                       ++
                       concat [map (a:) (paths'' c b [x | x <- xs, x /= (c,d)]) | (c,d) <- xs, d==a]
 
+-- Thanks again Haskell99.
+spanning_tree :: (Eq a, Show a) => Graph a -> [Graph a]
+spanning_tree (Graph xs ys) = filter connected $ filter (not . cycles) $ filter nodes allTrees
+              where
+                allTrees                       = [Graph (extract_nodes edges) edges | edges <- foldr acc [[]] ys]
+                acc e es                       = es ++ (map (e:) es)
+                extract_nodes e                = nub $ concat $ map (\(a,b) -> [a,b]) e
+                nodes (Graph xs' _)            = length xs == length xs'
+                cycles (Graph xs' ys')         = any((/=) 0 . length . flip cycle'' ys') xs'
+                connected (Graph (x':xs') ys') = not $ any (null) [paths'' x' y' ys' | y' <- xs']
