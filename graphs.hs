@@ -1,4 +1,5 @@
 import Data.List
+import Data.Array
 
 {-
 Problem 80: Conversions
@@ -6,9 +7,9 @@ Problem 80: Conversions
 Write predicates to convert between the different graph representations. With these predicates, all representations are equivalent; i.e. for the following problems you can always pick freely the most convenient form. The reason this problem is rated (***) is not because it's particularly difficult, but because it's a lot of work to deal with all the special cases.
 -}
 
-data Graph a     = Graph [a] [(a,a)]   deriving (Show, Eq)
-data Adjacency a = Adjacency [(a,[a])] deriving (Show, Eq)
-data Friendly a  = Friendly [(a,a)]    deriving (Show, Eq)
+data Graph a     = Graph     [a] [(a,a)]   deriving (Show, Eq)
+data Adjacency a = Adjacency [(a,[a])]     deriving (Show, Eq)
+data Friendly a  = Friendly  [(a,a)]       deriving (Show, Eq)
 
 graph1    = Graph ['g','h','b','c','f','k','d'] [('g','h'),('b','c'),('b','f'),('f','c'),('k','f')]
 graph2    = Graph ['a', 'b', 'c', 'd'] [('a', 'b'), ('b', 'c'), ('c', 'd'), ('d', 'a'), ('a', 'c'), ('b', 'd')]
@@ -140,3 +141,25 @@ spanning_tree (Graph xs ys) = filter connected $ filter (not . cycles) $ filter 
                 nodes (Graph xs' _)            = length xs == length xs'
                 cycles (Graph xs' ys')         = any((/=) 0 . length . flip cycle'' ys') xs'
                 connected (Graph (x':xs') ys') = not $ any (null) [paths'' x' y' ys' | y' <- xs']
+
+{-
+Problem 84
+
+Construct the minimal spanning tree
+
+-}
+
+type WeightedGraph n w = Array n [(n,w)]
+weighted1 = [(1,2,12),(1,3,34),(1,5,78),(2,4,55),(2,5,32),(3,4,61),(3,5,44),(4,5,93)]
+
+makeWeightedGraph :: (Ix i) => Bool -> (i,i) -> [(i,i,t)] -> (WeightedGraph i t)
+makeWeightedGraph dir bnds es = accumArray
+                  (\xs x -> x:xs)
+                  []
+                  bnds
+                  ([(x1,(x2,w)) | (x1,x2,w) <- es] ++ if dir then [] else [(x2,(x1,w)) | (x1,x2,w) <- es, x1/=x2]) 
+
+
+
+
+
