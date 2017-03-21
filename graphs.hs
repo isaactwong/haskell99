@@ -146,20 +146,41 @@ spanning_tree (Graph xs ys) = filter connected $ filter (not . cycles) $ filter 
 Problem 84
 
 Construct the minimal spanning tree
-
+-- Thanks Haskell99 and thanks Array.
 -}
 
 type WeightedGraph n w = Array n [(n,w)]
 weighted1 = [(1,2,12),(1,3,34),(1,5,78),(2,4,55),(2,5,32),(3,4,61),(3,5,44),(4,5,93)]
 
-makeWeightedGraph :: (Ix i) => Bool -> (i,i) -> [(i,i,t)] -> (WeightedGraph i t)
-makeWeightedGraph dir bnds es = accumArray
+mk_weighted_graph :: (Ix i) => Bool -> (i,i) -> [(i,i,t)] -> (WeightedGraph i t)
+mk_weighted_graph dir bnds es = accumArray
                   (\xs x -> x:xs)
                   []
                   bnds
                   ([(x1,(x2,w)) | (x1,x2,w) <- es] ++ if dir then [] else [(x2,(x1,w)) | (x1,x2,w) <- es, x1/=x2]) 
+adjacent :: (Ix i) => WeightedGraph i t -> i -> [i]
+adjacent g v = map fst (g!v)
+ 
+nodes :: (Ix i) => WeightedGraph i t -> [i]
+nodes g = indices g
 
+edge_in :: (Ix i) => WeightedGraph i t -> (i,i) -> Bool
+edge_in g (x,y) = elem y (adjacent g x)
 
+weight :: (Ix i) => i -> i -> WeightedGraph i t -> t
+weight x y g = head [c | (a,c) <- g!x, a == y]
 
+edges_d :: (Ix i) => WeightedGraph i t -> [(i,i,t)]
+edges_d g = [(v1,v2,w) | v1 <- nodes g, (v2,w) <- g!v1]
 
+edges_u :: (Ix i) => WeightedGraph i t -> [(i,i,t)]
+edges_u g = [(v1,v2,w) | v1 <- nodes g, (v2,w) <- g!v1, v1 < v2]
+
+prim :: (Ix i) => WeightedGraph i t -> [(t,i,i)]
+prim g = prim' [n] ns []
+     where (n:ns)         = nodes g
+           es             = edges_u g
+           prim' t [] mst = mst
+           prim' t r mst  = let e@(c,u',v') = minimum [(c,u,v) | (u,v,c) <- es, elem u t, elem v r]
+                            in prim' (v':t) (delete v' r) (e:mst)
 
