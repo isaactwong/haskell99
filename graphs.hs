@@ -176,7 +176,7 @@ edges_d g = [(v1,v2,w) | v1 <- nodes g, (v2,w) <- g!v1]
 edges_u :: (Ix i) => WeightedGraph i t -> [(i,i,t)]
 edges_u g = [(v1,v2,w) | v1 <- nodes g, (v2,w) <- g!v1, v1 < v2]
 
-prim :: (Ix i) => WeightedGraph i t -> [(t,i,i)]
+prim :: (Ix i, Ord t) => WeightedGraph i t -> [(t,i,i)]
 prim g = prim' [n] ns []
      where (n:ns)         = nodes g
            es             = edges_u g
@@ -184,3 +184,33 @@ prim g = prim' [n] ns []
            prim' t r mst  = let e@(c,u',v') = minimum [(c,u,v) | (u,v,c) <- es, elem u t, elem v r]
                             in prim' (v':t) (delete v' r) (e:mst)
 
+{-
+Problem 85
+
+Determine if two graphs are isomorphic.
+Many thanks Haskell99 for another brilliant solution.
+-}
+
+graphG1 = Graph [1, 2, 3, 4, 5, 6, 7, 8]
+                    [(1, 5), (1, 6), (1, 7), (2, 5), (2, 6), (2, 8),
+                    (3, 5), (3, 7), (3, 8), (4, 6), (4, 7), (4, 8)]
+ 
+graphH1 = Graph [1, 2, 3, 4, 5, 6, 7, 8]
+                    [(1, 2), (1, 4), (1, 5), (6, 2), (6, 5), (6, 7),
+                    (8, 4), (8, 5), (8, 7), (3, 2), (3, 4), (3, 7)]
+ 
+canonical :: (Ord a, Enum a) => Graph a -> String
+canonical g = minimum $ map f (perm (length a))
+            where
+                Adjacency a = graph_to_adj g
+                v = map fst a
+                perm n = foldr (\x xs -> [i : s | i <- [1..n], s <- xs, notElem i s]) [[]] [1..n]
+                f p = let n = zip v p
+                      in  show [(snd x, sort id $ map (\x -> snd $ head $ snd $ break ((==) x . fst) n) $ snd $ find a x) | x <- sort snd n]
+                sort f n = foldr (\x xs -> let (lt,gt) = break ((<) (f x) . f) xs in lt ++ [x] ++ gt) [] n
+                find a x = let (xs,ys) = break ((==) (fst x) . fst) a in head ys
+
+isomorphic :: (Ord a, Enum a, Ord b, Enum b) => Graph a -> Graph b -> Bool
+isomorphic g@(Graph xs ys) h@(Graph xs' ys') = length xs   == length xs' &&
+                                               length ys   == length ys' &&
+                                               canonical g == canonical h
