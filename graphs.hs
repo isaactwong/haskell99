@@ -214,3 +214,26 @@ isomorphic :: (Ord a, Enum a, Ord b, Enum b) => Graph a -> Graph b -> Bool
 isomorphic g@(Graph xs ys) h@(Graph xs' ys') = length xs   == length xs' &&
                                                length ys   == length ys' &&
                                                canonical g == canonical h
+
+{-
+
+Problem 86
+
+a) Write a predicate degree(Graph,Node,Deg) that determines the degree of a given node.
+
+b) Write a predicate that generates a list of all nodes of a graph sorted according to decreasing degree.
+
+c) Use Welch-Powell's algorithm to paint the nodes of a graph in such a way that adjacent nodes have different colors.
+
+-}
+
+-- Degree of a node.
+node_degree :: (Eq a) => Graph a -> [(Int, a)]
+node_degree g@(Graph xs ys) = map (\(v,vs) -> (length vs,v)) as
+            where Adjacency as = graph_to_adj g
+
+-- Array of nodes sorted in decreasing order.
+nodes_decreasing :: (Eq a, Ord a) => Graph a -> [(Int, a)]
+nodes_decreasing = sort . node_degree
+
+-- Welch-Powell algorithm to paint nodes such that adjacent nodes have different colors.
