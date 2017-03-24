@@ -220,11 +220,10 @@ isomorphic g@(Graph xs ys) h@(Graph xs' ys') = length xs   == length xs' &&
 Problem 86
 
 a) Write a predicate degree(Graph,Node,Deg) that determines the degree of a given node.
-
 b) Write a predicate that generates a list of all nodes of a graph sorted according to decreasing degree.
-
 c) Use Welch-Powell's algorithm to paint the nodes of a graph in such a way that adjacent nodes have different colors.
 
+Thanks again to Haskell99 for the wp_color implementation.
 -}
 
 -- Degree of a node.
@@ -236,4 +235,25 @@ node_degree g@(Graph xs ys) = map (\(v,vs) -> (length vs,v)) as
 nodes_decreasing :: (Eq a, Ord a) => Graph a -> [(Int, a)]
 nodes_decreasing = sort . node_degree
 
+-- Sorted Adjacency Graph. Everything is descending.
+sort_graph :: (Eq a, Ord a) => Graph a -> Adjacency a
+sort_graph g = Adjacency (map (\(a,b) -> (a, sort b 1 maximum)) (sort adj 1 maxv))
+           where Adjacency adj = graph_to_adj g
+                 sort [] _ _   = []
+                 sort xs n f   = let m = f xs
+                                 in  m : sort [x | x <- xs, x /= m] (n+1) f
+                 maxv (x:xs)   = foldr(\a@(a1,_) b@(b1,_) -> if a1 > b1 then a else b) x xs
+
 -- Welch-Powell algorithm to paint nodes such that adjacent nodes have different colors.
+wp_color :: (Eq a, Ord a) => Graph a -> [(a, Int)]
+wp_color g = color adj [] 1
+         where
+                Adjacency adj = sort_graph g
+                color [] ys _ = ys
+                color xs ys n = let ys' = color' xs ys n
+                                in  color [x | x <- xs, notElem (fst x,n) ys'] ys' (n+1)
+                color' [] ys n         = ys
+                color' ((v,e):xs) ys n = if any (\x -> elem (x,n) ys) e
+                                         then color' xs ys n
+                                         else color' xs ((v,n):ys) n
+
