@@ -263,7 +263,7 @@ Problem 87
 Depth-first order graph traversal.
 
 Write a predicate that generates a depth-first order graph traversal sequence. The starting point should be specified, and the output should be a list of nodes that are reachable from this starting point (in depth-first order).
-
+Clean solution from Haskell99.
 -}
 
 depth_first :: (Show a, Eq a) => Graph a -> a -> [a]
