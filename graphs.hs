@@ -257,3 +257,28 @@ wp_color g = color adj [] 1
                                          then color' xs ys n
                                          else color' xs ((v,n):ys) n
 
+{-
+Problem 87
+
+Depth-first order graph traversal.
+
+Write a predicate that generates a depth-first order graph traversal sequence. The starting point should be specified, and the output should be a list of nodes that are reachable from this starting point (in depth-first order).
+
+-}
+
+depth_first :: (Show a, Eq a) => Graph a -> a -> [a]
+depth_first (Graph vs es) v
+            | [x | x <- vs, x == v] == [] = []
+            | otherwise                  = df_recursive (Graph vs es) [v]
+
+df_recursive :: (Show a, Eq a) => Graph a -> [a] -> [a]
+df_recursive (Graph [] _) _ = []
+df_recursive (Graph _ _) [] = []
+df_recursive (Graph vs es) (t:ts)
+             | [x | x <- vs, x == t] == [] = df_recursive (Graph vs' es) ts
+             | otherwise = t : df_recursive (Graph vs' es) (adjacent ++ ts)
+             where
+                adjacent = [x | (x,y) <- es, y == t] ++ [x | (y,x) <- es, y == t]
+                vs' = [x | x <- vs, x /= t]
+
+
