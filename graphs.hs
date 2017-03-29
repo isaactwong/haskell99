@@ -282,3 +282,20 @@ df_recursive (Graph vs es) (t:ts)
                 vs' = [x | x <- vs, x /= t]
 
 
+{-
+Problem 88
+
+Connected components 
+
+Write a predicate that splits a graph into its connected components.
+More help from Haskell99.
+-}
+
+connected :: (Show a, Eq a) => Graph a -> [[a]]
+connected (Graph [] _) = []
+connected g@(Graph (v:vs) es) 
+          | remaining == [] = [c]
+          | otherwise       = c : connected (Graph remaining es)
+          where
+                remaining = (v:vs) \\ c 
+                c         = depth_first (Graph (v:vs) es) v
