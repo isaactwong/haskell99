@@ -299,3 +299,34 @@ connected g@(Graph (v:vs) es)
           where
                 remaining = (v:vs) \\ c 
                 c         = depth_first (Graph (v:vs) es) v
+
+{-
+Problem 89
+
+Bipartite graphs
+
+Write a predicate that finds out whether a given graph is bipartite.
+Haskell99 to the rescue.
+-}
+
+bipartite :: (Eq a, Show a) => Graph a -> Bool
+bipartite (Graph [] _) = True
+bipartite g@(Graph (v:vs) es) = _bipartite g [(v,0)] [] []
+
+_bipartite :: (Eq a, Show a) => Graph a -> [(a,Int)] -> [a] -> [a] -> Bool
+_bipartite (Graph [] _) _ _ _ = True
+_bipartite (Graph _ _) [] _ _ = True
+_bipartite (Graph vs es) ((nv,0):stack) odd even
+           | [x | x <- vs, x == nv] == []  = _bipartite (Graph vs es) stack odd even
+           | [] == intersect adjacent even = _bipartite (Graph newv es) ([(x,1) | x <- adjacent] ++ stack) odd (nv : even)
+           | otherwise                     = False
+           where
+                adjacent = [x | (x,y) <- es, y == nv] ++ [x | (y,x) <- es, y == nv]
+                newv     = [x | x <- vs, x /= nv]
+_bipartite (Graph vs es) ((nv,1):stack) odd even
+           | [x | x <- vs, x == nv] == []  = _bipartite (Graph vs es) stack odd even
+           | [] == intersect adjacent odd  = _bipartite (Graph newv es) ([(x,0) | x <- adjacent] ++ stack) (nv:odd) even
+           | otherwise                     = False
+           where
+                adjacent = [x | (x,y) <- es, y == nv] ++ [x | (y,x) <- es, y == nv]
+                newv     = [x | x <- vs, x /= nv]
