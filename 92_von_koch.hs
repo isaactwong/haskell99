@@ -8,6 +8,8 @@ Anyway the puzzle goes like this: Given a tree with N nodes (and hence N-1 edges
 For small trees the problem is easy to solve by hand. However, for larger trees, and 14 is already very large, it is extremely difficult to find a solution. And remember, we don't know for sure whether there is always a solution!
 
 Write a predicate that calculates a numbering scheme for a given tree. What is the solution for the larger tree pictured below?
+
+Again, Haskell99 to the rescue with a cool backtracking solution.
 -}
 
 edges1 = [(1, 5), (1, 6), (1, 7), (2, 5), (2, 6), (2, 8), (3, 5), (3, 7), (3, 8), (4, 6), (4, 7), (4, 8)]
