@@ -19,6 +19,7 @@ The puzzle goes like this: Essentially, each row and column of a rectangular bit
               2 1 5 1                     2 1 5 1                      
 
 For the example above, the problem can be stated as the two lists [[3],[2,1],[3,2],[2,2],[6],[1,5],[6],[1],[2]] and [[1,2],[3,1],[1,5],[7,1],[5],[3],[4],[3]] which give the "solid" lengths of the rows and columns, top-to-bottom and left-to-right, respectively. Published puzzles are larger than this example, e.g. 25 x 20, and apparently always have unique solutions.
+Solution from Haskell99.
 -}
 
 data Square = Blank | Cross deriving (Eq)
