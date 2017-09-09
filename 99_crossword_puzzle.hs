@@ -2,6 +2,7 @@ import Data.List
 import Data.Function (on)
 import Data.Ord (comparing)
 import Control.Monad (guard)
+
 {-
 Given an empty (or almost empty) framework of a crossword puzzle and a set of words. The problem is to place the words into the framework.
 
@@ -14,6 +15,8 @@ Hints: (1) The problem is not easy. You will need some time to thoroughly unders
 (2) Reading the data file is a tricky problem for which a solution is provided in the file p7_09-readfile.pl. See the predicate read_lines/2.
 
 (3) For efficiency reasons it is important, at least for larger puzzles, to sort the words and the sites in a particular order. For this part of the problem, the solution of P28 may be very helpful.
+
+Solution from Haskell99 but I can't get the types to work out here.
 -}
 
 type Coord = (Int, Int)
@@ -21,29 +24,24 @@ type Wort = String
 data Site = Site { siteCoords :: [Coord], siteLen :: Int } deriving (Show, Eq)
 data Crossword = Crossword { cwWords :: [Wort], cwSites :: [Site] } deriving (Show, Eq)
 
--- equalling = ((==) `on`)
+equalling = ((==) `on`)
 
 toSites :: [String] -> [Site]
 toSites lines = find (index_it lines) ++ find (transpose .index_it $ lines)
   where find = map makePos . concatMap extractor
-        extractor = filter ((>1) . length) . map (filter ((=='.') . snd)) . groupBy (equaling snd)
+        extractor = filter ((>1) . length) . map (filter ((=='.') . snd)) . groupBy (equalling snd)
         index_it = zipWith (\row -> zip [(col, row) | col <- [1..]]) [1..]
         makePos xs = Site { siteCoords = map fst xs, siteLen = length xs }
-{-
-noCollisions :: [(String, Site)] -> Bool
-noCollisions xs = all allEqual groupedByCoord
-  where groupedByCoord map (map snd) . groupBy (equaling fst) . sortBy (comparing fst) . concatMap together $ xs
-  o
--}
 
-noCollision :: [(String, Site)] -> Bool
+noCollision :: [(Wort, Site)] -> Bool
 noCollision xs = all allEqual groupedByCoord
-    where groupedByCoord = map (map snd) . groupBy (equaling fst) . sortBy (comparing fst) . concatMap together $ xs
+    where groupedByCoord = map (map snd) . groupBy (equalling fst) . sortBy (comparing fst) . concatMap together $ xs
           allEqual []     = True
           allEqual (x:xs) = all (x==) xs
 
-together :: (Word, Site) -> [(Coord, Char)]
+together :: (Wort, Site) -> [(Coord, Char)]
 together (w, s) = zip (siteCoords s) w
+
 
 solve :: Crossword -> [[(Coord, Char)]]
 solve cw = map (concatMap together) solution
@@ -60,3 +58,4 @@ solve' words (s : ss) = if null possWords
                                    Control.Monad.guard $ noCollision attempt
                                    return attempt
   where possWords = filter (\w -> siteLen s == length w) words
+
